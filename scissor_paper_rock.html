@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title style="align-items: center;">Scissor paper Rock</title>
+        <style>
+            .Point{
+                border: none;background-color: transparent;cursor: default;
+                align-items:center;
+            }
+        </style>
+
+        <script>
+            let score={
+                    comp_score : 0,
+                    user_score : 0
+                }
+
+            if(localStorage.getItem("score")){
+                score=JSON.parse(localStorage.getItem("score"))
+            }
+            
+        
+            let computer=["paper","scissor","rock"];
+
+            function save_score(){
+                localStorage.setItem("score",JSON.stringify(score));
+            }
+            
+            function show_score(){
+                document.querySelector("#score").innerHTML=`Your score is :<span style="color: red; font-size: 60px; font-weight: bold;">${score.user_score}</span>  
+                computer's score is : <span style="color: red; font-size: 60px; font-weight: bold;">${score.comp_score}</span>`;
+            }
+
+            function comp_choice(random_answer){
+                
+                let button = document.createElement("button");
+                button.style.border = "none";
+                button.style.backgroundColor = "transparent";
+                button.style.cursor = "default";
+                
+                let img = document.createElement("img");
+                img.width = 180;
+                img.height = 180;
+                
+                if(random_answer === "paper"){
+                    img.src = "images/paper.jpg";
+                } else if(random_answer === "rock"){
+                    img.src = "images/rock.jpg";
+                } else if(random_answer === "scissor"){
+                    img.src = "images/scissor.jpg";
+                }
+                
+                button.appendChild(img);
+                document.querySelector("#comp_answer").innerHTML = "";
+                document.querySelector("#comp_answer").appendChild(button);
+            }
+            function user_win(value , u_data, c_data){
+                if (value*comp_answer==4){
+                    score.user_score++;
+                    show_score();
+                }
+                else if(u_data===c_data){
+                    show_score();
+                }
+                else{
+                    score.comp_score++;
+                    show_score();
+                }
+                save_score();
+            }
+
+            function reset(){
+                score.comp_score=0;
+                score.user_score=0;
+                
+                show_score();
+                save_score();
+            }
+            
+            document.addEventListener("DOMContentLoaded",function(){
+                document.querySelector("#reset").onclick=function(){
+                    reset();
+                }
+                document.querySelectorAll(".Point").forEach(point=>{
+                    point.onclick=function(){
+                        let random_answer=computer[Math.floor(Math.random()*3)]
+                        if(random_answer=="paper"){
+                            comp_answer=2;
+                        }
+                        else if(random_answer=="scissor"){
+                            comp_answer=-2;
+                        }
+                        else{
+                            comp_answer=1;
+                        }
+                        document.querySelector("#comp").innerHTML="Computer's choice:";
+                        comp_choice(random_answer);
+                        user_win(Number(point.dataset.point),point.dataset.value,random_answer);
+                    }
+                })
+            })
+            
+            
+        
+
+        </script>
+    </head>
+
+    <body>
+        <h1>Scissor Paper Rock</h1>
+        <h1 id="comp"></h1>
+        <h1 id="comp_answer"></h1>
+        <button data-point=4 class="Point" data-value="paper">
+            <img src="images/paper.jpg" alt="Paper" width="160" >
+        </button> 
+        <button data-point=-2 class="Point" data-value="rock">
+            <img src="images/rock.jpg" alt="Rock" width="160" >
+        </button> 
+        <button data-point=2 class="Point" data-value="scissor">
+            <img src="images/scissor.jpg" alt="Scissor" width="160" >
+        </button>
+        <button id="reset">Reset score</button>
+        <h1 id="score"></h1>    
+    </body>
+</html>

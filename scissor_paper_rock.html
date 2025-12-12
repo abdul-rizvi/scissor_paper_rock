@@ -8,6 +8,12 @@
                 border: none;background-color: transparent;cursor: default;
                 align-items:center;
             }
+            .output {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px; 
+                align-items: center;
+            }
         </style>
 
         <script>
@@ -32,7 +38,7 @@
                 computer's score is : <span style="color: red; font-size: 60px; font-weight: bold;">${score.comp_score}</span>`;
             }
 
-            function comp_choice(random_answer){
+            function comp_choice(random_answer,location,display){
                 
                 let button = document.createElement("button");
                 button.style.border = "none";
@@ -52,10 +58,10 @@
                 }
                 
                 button.appendChild(img);
-                document.querySelector("#comp_answer").innerHTML = "";
-                document.querySelector("#comp_answer").appendChild(button);
+                document.querySelector(`#${location}`).innerHTML = `${display}'s choice`;
+                document.querySelector(`#${location}`).appendChild(button);
             }
-            function user_win(value , u_data, c_data){
+            function user_win(value , u_data, c_data,comp_answer){
                 if (value*comp_answer==4){
                     score.user_score++;
                     show_score();
@@ -73,9 +79,42 @@
             function reset(){
                 score.comp_score=0;
                 score.user_score=0;
-                
                 show_score();
                 save_score();
+            }
+
+            
+            function output(value, u_data){
+                let random_answer=computer[Math.floor(Math.random()*3)]
+                let comp_answer;
+                if(random_answer=="paper"){
+                    comp_answer=2;
+                }
+                else if(random_answer=="scissor"){
+                    comp_answer=-2;
+                }
+                else{
+                    comp_answer=1;
+                }
+                document.querySelector("#comp").innerHTML="Computer's choice:";
+                comp_choice(random_answer,"comp_answer","computer");
+                comp_choice(u_data,"user_answer","computer");
+                user_win(Number(value),u_data,random_answer,comp_answer);
+            }
+
+            function autoplay(){
+                let random_answer=computer[Math.floor(Math.random()*3)]
+                let comp_answer;
+                if(random_answer=="paper"){
+                    comp_answer=2;
+                }
+                else if(random_answer=="scissor"){
+                    comp_answer=-2;
+                }
+                else{
+                    comp_answer=1;
+                }
+                output(comp_answer,random_answer);
             }
             
             document.addEventListener("DOMContentLoaded",function(){
@@ -84,21 +123,34 @@
                 }
                 document.querySelectorAll(".Point").forEach(point=>{
                     point.onclick=function(){
-                        let random_answer=computer[Math.floor(Math.random()*3)]
-                        if(random_answer=="paper"){
-                            comp_answer=2;
-                        }
-                        else if(random_answer=="scissor"){
-                            comp_answer=-2;
-                        }
-                        else{
-                            comp_answer=1;
-                        }
-                        document.querySelector("#comp").innerHTML="Computer's choice:";
-                        comp_choice(random_answer);
-                        user_win(Number(point.dataset.point),point.dataset.value,random_answer);
+                        output(Number(point.dataset.point),point.dataset.value)
                     }
                 })
+                
+                let intervalId = null;
+
+                document.querySelector(".autoplay").onclick = function() {
+                    // Prevent multiple intervals
+                    if (intervalId !== null) return;
+
+                    if (!document.querySelector(".stop")) {
+                        let html = document.createElement("button");
+                        html.textContent = "Stop";
+                        html.className = "stop";
+                        document.querySelector(".buttons").appendChild(html);
+                        document.querySelector(".stop").onclick = function() {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                        }
+                    } else {
+                        // If stop button exists, update its onclick to always clear the current interval
+                        document.querySelector(".stop").onclick = function() {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                        }
+                    }
+                    intervalId = setInterval(autoplay, 1000);
+                }
             })
             
             
@@ -110,7 +162,7 @@
     <body>
         <h1>Scissor Paper Rock</h1>
         <h1 id="comp"></h1>
-        <h1 id="comp_answer"></h1>
+        
         <button data-point=4 class="Point" data-value="paper">
             <img src="images/paper.jpg" alt="Paper" width="160" >
         </button> 
@@ -120,7 +172,16 @@
         <button data-point=2 class="Point" data-value="scissor">
             <img src="images/scissor.jpg" alt="Scissor" width="160" >
         </button>
-        <button id="reset">Reset score</button>
+        <p></p>
+        <div class="buttons">
+            <button id="reset">Reset score</button>
+            <button id="autoplay" class="autoplay">Auto Play</button>
+        </div>
+        
+        <div class="output">
+            <h1 id="comp_answer"></h1> <h1 id="user_answer"></h1>
+        </div>
+        
         <h1 id="score"></h1>    
     </body>
 </html>

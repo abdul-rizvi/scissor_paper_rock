@@ -130,26 +130,18 @@
                 let intervalId = null;
 
                 document.querySelector(".autoplay").onclick = function() {
-                    // Prevent multiple intervals
-                    if (intervalId !== null) return;
+                    if(document.querySelector(".autoplay").innerHTML==="Auto Play"){
+                        intervalId = setInterval(autoplay, 1000);
+                        document.querySelector(".autoplay").innerHTML="Stop Play";
 
-                    if (!document.querySelector(".stop")) {
-                        let html = document.createElement("button");
-                        html.textContent = "Stop";
-                        html.className = "stop";
-                        document.querySelector(".buttons").appendChild(html);
-                        document.querySelector(".stop").onclick = function() {
-                            clearInterval(intervalId);
-                            intervalId = null;
-                        }
-                    } else {
-                        // If stop button exists, update its onclick to always clear the current interval
-                        document.querySelector(".stop").onclick = function() {
-                            clearInterval(intervalId);
-                            intervalId = null;
-                        }
                     }
-                    intervalId = setInterval(autoplay, 1000);
+                    else if(document.querySelector(".autoplay").innerHTML==="Stop Play"){
+                        document.querySelector(".autoplay").innerHTML="Auto Play";
+                        clearInterval(intervalId);
+                        intervalId = null;
+
+                    }
+                    
                 }
             })
             

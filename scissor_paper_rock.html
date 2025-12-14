@@ -116,16 +116,31 @@
                 }
                 output(comp_answer,random_answer);
             }
+
             
             document.addEventListener("DOMContentLoaded",function(){
                 document.querySelector("#reset").onclick=function(){
                     reset();
                 }
+
                 document.querySelectorAll(".Point").forEach(point=>{
                     point.onclick=function(){
                         output(Number(point.dataset.point),point.dataset.value)
                     }
+                
                 })
+
+                document.body.addEventListener("keydown",(event)=>{
+                    if(event.key==="s"){
+                        output(2,"scissor");
+                        console.log("scissor");
+                    }else if (event.key==="p"){
+                        output(4,"paper");
+                    }else if(event.key=="r"){
+                        output(-2,"rock");
+                    }
+                })
+            
                 
                 let intervalId = null;
 
